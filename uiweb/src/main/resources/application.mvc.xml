@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <!-- 包含Spring配置文件 -->
+    <import resource="classpath:applicationContext.xml"/>
+    <!-- 配置组件扫描 -->
+    <context:component-scan base-package="club.ming19.furnitureSales"/>
+    <!-- 注解驱动支持 -->
+    <mvc:annotation-driven/>
+    <!-- 静态资源问题处理 -->
+    <mvc:default-servlet-handler/>
+    <!-- 视图解析 -->
+    <mvc:view-resolvers>
+        <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+            <property name="prefix" value="/WEB-INF/views/"/>
+            <property name="suffix" value=".jsp"/>
+        </bean>
+    </mvc:view-resolvers>
+    <!-- 注册拦截器 -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/user/*"/>
+            <bean class="club.ming19.furnitureSales.web.interceptor.LoginInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+    <!-- 文件上传解析器 -->
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
+    <!--<property name="defaultEncoding" value="UTF-8"/>-->
+    <!--<property name="maxUploadSizePerFile" value="#{5*1024*1024}"/>-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 异步监听器配置 &ndash;&gt;-->
+    <!--<task:executor id="asyncExecutor" pool-size="50" keep-alive="1000" queue-capacity="100"/>-->
+    <!--<task:annotation-driven executor="asyncExecutor"/>-->
+</beans>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="club.ming19.furnitureSales.mapper.SystemDictionaryMapper">
+    <select id="listSystemDictionary" resultType="SystemDictionary">
+        SELECT id,sn,name,intro FROM systemdictionary
+    </select>
+
+    <select id="querySystemDictionaryItemsByPid" resultType="SystemDictionaryItem">
+        SELECT id,name,intro FROM systemdictionaryitem WHERE parent_id = #{id}
+    </select>
+
+    <select id="getSystemDictionaryItemById" resultType="SystemDictionaryItem">
+        SELECT id,name,intro FROM systemdictionaryitem WHERE id = #{id}
+    </select>
+
+    <insert id="saveSystemDictionaryItem" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO systemdictionaryitem (name,intro,parent_id) VALUES (#{name},#{intro},#{parent.id})
+    </insert>
+
+    <update id="updateSystemDictionaryItemById">
+        UPDATE systemdictionaryitem SET name = #{name},intro = #{intro} WHERE id = #{id}
+    </update>
+
+    <delete id="deleteSystemDictionaryItemById">
+        DELETE FROM systemdictionaryitem WHERE id = #{id}
+    </delete>
+
+    <select id="querySystemDictionaryItemsByPsn" resultType="SystemDictionaryItem">
+        SELECT i.id,i.name FROM systemdictionary s LEFT join systemdictionaryitem i ON i.parent_id = s.id WHERE s.sn =
+        #{sn}
+    </select>
+
+    <select id="querySystemDictionariesByPsn" resultType="SystemDictionary">
+        SELECT s2.id,s2.name FROM systemdictionary s1 LEFT join systemdictionary s2 ON s2.parent_id = s1.id WHERE s1.sn
+        = #{sn}
+    </select>
+
+    <select id="getBysn" resultType="SystemDictionary">
+        SELECT id,sn FROM systemdictionary WHERE sn = #{sn}
+    </select>
+</mapper>

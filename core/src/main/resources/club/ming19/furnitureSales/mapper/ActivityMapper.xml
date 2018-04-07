@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="club.ming19.furnitureSales.mapper.ActivityMapper">
+    <select id="listActivities" resultType="Activity">
+        SELECT id,title,intro,state,esState FROM activity
+    </select>
+
+    <resultMap id="baseMap" type="Activity">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="intro" property="intro"/>
+        <result column="beginTime" property="beginTime"/>
+        <result column="endTime" property="endTime"/>
+        <result column="discount" property="discount"/>
+        <result column="state" property="state"/>
+        <result column="esState" property="esState"/>
+        <result column="estimate" property="estimate"/>
+        <result column="esIntro" property="esIntro"/>
+        <collection property="goods" ofType="Goods" columnPrefix="goods_">
+            <id column="id" property="id"/>
+            <result column="sn" property="sn"/>
+            <result column="name" property="name"/>
+        </collection>
+    </resultMap>
+
+    <select id="getActivityById" resultMap="baseMap">
+        SELECT a.*,ag.goods_id,g.sn goods_sn,g.name goods_name
+        FROM activity a LEFT JOIN activity_goods ag ON ag.activity_id = a.id
+        LEFT JOIN goods g ON g.id = ag.goods_id
+        WHERE a.id = #{id}
+    </select>
+
+    <insert id="saveActivity" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO activity (title,intro,beginTime,endTime,discount,state,esState)
+        VALUES (#{title},#{intro},#{beginTime},#{endTime},#{discount},#{state},#{esState})
+    </insert>
+
+    <update id="updateActivity">
+        UPDATE activity SET title = #{title},intro = #{intro},discount = #{discount} WHERE id = #{id}
+    </update>
+
+    <insert id="saveRelation">
+        INSERT INTO activity_goods (activity_id,goods_id) VALUES (#{aid},#{gid})
+    </insert>
+
+    <delete id="delOldRelation">
+        DELETE FROM activity_goods WHERE activity_id = #{id}
+    </delete>
+
+    <update id="updateEstimate">
+        UPDATE activity SET esState = true,estimate = #{estimate},esIntro = #{esIntro}
+        WHERE id = #{id} AND state = 2 AND esState = false
+    </update>
+
+    <update id="updateState">
+        UPDATE activity SET State = 3,esState = true,estimate = -1,esIntro = #{esIntro} WHERE id = #{id}
+    </update>
+
+    <update id="updateActivityStateByAsync">
+        UPDATE activity SET State = #{state} WHERE id = #{id} AND state != 3
+    </update>
+</mapper>

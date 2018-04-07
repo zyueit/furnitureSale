@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="club.ming19.furnitureSales.mapper.GoodsMapper">
+    <sql id="condition">
+        <where>
+            <if test="keyword != null">
+                (sn LIKE CONCAT("%",#{keyword},"%") OR name LIKE CONCAT("%",#{keyword},"%"))
+            </if>
+            <if test="state > -1">
+                AND state = #{state}
+            </if>
+            <if test="stockCount != null and stockCount > 0">
+                AND stockCount &lt;= #{stockCount}
+            </if>
+        </where>
+    </sql>
+
+    <select id="listGoodsCount" resultType="long">
+        SELECT COUNT(*) FROM goods
+        <include refid="condition"/>
+    </select>
+
+    <select id="listGoods" resultType="Goods">
+        SELECT id,sn,name,stockCount,saleCount,state FROM goods
+        <include refid="condition"/>
+        ORDER BY stockCount DESC
+        LIMIT #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getGoodsById" resultType="Goods">
+        SELECT * FROM goods WHERE id = #{id}
+    </select>
+
+    <insert id="saveGoods" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO goods
+        (sn,name,place,style,material,room_id,type,size,num,stockCount,costPrice,
+        salePrice,discountPrice,intro,imgs,addTime,state,saleCount)
+        VALUES
+        (#{sn},#{name},#{place},#{style},#{material},#{room.id},#{type},#{size},#{num},#{stockCount},#{costPrice},
+        #{salePrice},#{discountPrice},#{intro},#{imgs},#{addTime},#{state},#{saleCount})
+    </insert>
+
+    <update id="addStockCount">
+        UPDATE goods SET stockCount = stockCount + #{stock} WHERE id = #{id}
+    </update>
+
+    <update id="updateState">
+        <if test="state"><!-- 下架 -->
+            UPDATE goods SET state = 0 WHERE id = #{id}
+        </if>
+        <if test="!state"><!-- 上架 -->
+            UPDATE goods SET state = 1 WHERE id = #{id}
+        </if>
+    </update>
+
+    <update id="updateImgs">
+        UPDATE goods SET imgs = #{imgs} WHERE id = #{id}
+    </update>
+
+    <select id="listForActivity" resultType="Goods">
+        SELECT id,sn,name,state FROM goods
+        WHERE id NOT IN
+        (SELECT goods_id FROM activity JOIN activity_goods on activity_id = id WHERE state = 0 OR state = 1)
+        <if test="keyword != null">
+            AND (sn LIKE CONCAT("%",#{keyword},"%") OR name LIKE CONCAT("%",#{keyword},"%"))
+        </if>
+        ORDER BY saleCount DESC
+        LIMIT #{startIndex},#{pageSize}
+    </select>
+
+    <select id="listForActivityCount" resultType="long">
+        SELECT COUNT(*) FROM goods
+        WHERE id NOT IN
+        (SELECT goods_id FROM activity JOIN activity_goods on activity_id = id WHERE state = 0 OR state = 1)
+        <if test="keyword != null">
+            AND (sn LIKE CONCAT("%",#{keyword},"%") OR name LIKE CONCAT("%",#{keyword},"%"))
+        </if>
+    </select>
+
+    <select id="getByIdForActivity" resultType="Goods">
+        SELECT * FROM goods
+        WHERE id = #{id} AND id NOT IN
+        (SELECT goods_id FROM activity JOIN activity_goods on activity_id = id WHERE state = 0 OR state = 1)
+    </select>
+
+    <!-- 精品推荐查询 -->
+    <select id="listGoodsBySaleCount" resultType="Goods">
+        SELECT * FROM goods WHERE state = 1 ORDER BY saleCount DESC LIMIT 0,10
+    </select>
+
+    <!-- 新品查询 -->
+    <select id="listGoodsByAddTime" resultType="Goods">
+        SELECT * FROM goods WHERE state = 1 ORDER BY addTime DESC LIMIT 0,9
+    </select>
+
+    <sql id="ui_conditions">
+        <where>
+            g.state = 1
+            <if test="keyword != null">
+                AND (g.name LIKE CONCAT("%",#{keyword},"%") OR g.place LIKE CONCAT("%",#{keyword},"%")
+                OR g.style LIKE CONCAT("%",#{keyword},"%") OR g.material LIKE CONCAT("%",#{keyword},"%")
+                OR g.type LIKE CONCAT("%",#{keyword},"%") OR sd.name LIKE CONCAT("%",#{keyword},"%"))
+            </if>
+            <if test='style != null and style.trim() != ""'>
+                AND g.style = #{style}
+            </if>
+            <if test='material != null and material.trim() != ""'>
+                AND g.material = #{material}
+            </if>
+            <if test="roomId != null">
+                AND g.room_id = #{roomId}
+            </if>
+            <if test='type != null and type.trim() != ""'>
+                AND g.material = #{material}
+            </if>
+            <if test="lowMoney != null">
+                AND g.salePrice &gt;= #{lowMoney}
+            </if>
+            <if test="highMoney != null">
+                AND (g.salePrice &lt;= #{highMoney} OR g.discountPrice &lt;= #{highMoney})
+            </if>
+        </where>
+    </sql>
+
+    <!-- 首页查询 -->
+    <select id="queryCountByCondition" resultType="long">
+        SELECT COUNT(*) FROM goods g LEFT JOIN systemDictionary sd ON sd.id = g.room_id
+        <include refid="ui_conditions"/>
+    </select>
+
+    <!-- 首页查询 -->
+    <select id="queryByCondition" resultType="Goods">
+        SELECT g.* FROM goods g LEFT JOIN systemDictionary sd ON sd.id = g.room_id
+        <include refid="ui_conditions"/>
+        ORDER BY
+        <choose>
+            <when test="sort == 2"><!-- 售价从低到高 -->
+                g.salePrice,g.discountPrice
+            </when>
+            <when test="sort == 1"><!-- 发布时间 -->
+                g.addTime DESC
+            </when>
+            <otherwise><!-- 销量 -->
+                g.saleCount DESC
+            </otherwise>
+        </choose>
+        LIMIT #{startIndex},#{pageSize}
+    </select>
+
+    <resultMap id="baseMap" type="Goods" autoMapping="true">
+        <id column="id" property="id"/>
+        <association property="activity" columnPrefix="activity_" javaType="Activity" autoMapping="true">
+            <id column="id" property="id"/>
+        </association>
+    </resultMap>
+
+    <!-- 家具详细信息 -->
+    <select id="getAllById" resultMap="baseMap">
+        SELECT g.*,ga.activity_id,ga.title activity_title,ga.discount activity_discount
+        FROM (SELECT * FROM goods WHERE id = #{id}) g LEFT JOIN
+        (SELECT * FROM activity a JOIN activity_goods ag ON a.id = ag.activity_id WHERE a.state = 1) ga
+        ON ga.goods_id = g.id
+    </select>
+</mapper>

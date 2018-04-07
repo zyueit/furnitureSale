@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="club.ming19.furnitureSales.mapper.LoginInfoMapper">
+    <select id="getLoginInfoForLogin" resultType="LoginInfo">
+        SELECT l.id,l.username,l.password FROM loginInfo l LEFT JOIN userinfo u ON u.id = l.id
+        WHERE (l.username = #{username} OR u.phone = #{username}) AND l.password = #{password} AND l.userType = #{userType};
+    </select>
+
+    <update id="updateLoginTimeAndIdById">
+        UPDATE loginInfo SET loginTime = #{loginTime},login_ID = #{login_ID} WHERE id = #{id}
+    </update>
+
+    <select id="getLoginIdById" resultType="string">
+        SELECT login_ID FROM loginInfo WHERE id = #{id}
+    </select>
+
+    <sql id="conditions">
+        <where>
+            userType = #{userType}
+            <if test="keyword != null">
+                AND username LIKE CONCAT("%",#{keyword},"%")
+            </if>
+        </where>
+    </sql>
+
+    <select id="listLoginInfoCount" resultType="long">
+        SELECT COUNT(*) FROM loginInfo
+        <include refid="conditions"/>
+    </select>
+
+    <select id="listLoginInfo" resultType="LoginInfo">
+        SELECT id,username,password,loginTime FROM loginInfo
+        <include refid="conditions"/>
+        ORDER BY loginTime DESC
+        <if test="pageSize > 0">
+            LIMIT #{startIndex},#{pageSize}
+        </if>
+    </select>
+
+    <update id="resetPassword">
+        UPDATE loginInfo SET password = #{password} WHERE id = #{id}
+    </update>
+
+    <insert id="saveLoginInfo" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO loginInfo (username,password,userType) VALUES (#{username},#{password},#{userType})
+    </insert>
+</mapper>
