@@ -26,7 +26,7 @@ public class SmsUtil {
     //随机数
     private static final String NONCE = "870826";
     //短信模板ID
-    private static final String TEMPLATEID = "3922577";
+    private static final String TEMPLATEID = "4022670";
     //验证码长度，范围4～10，默认为4
     private static final String CODELEN = "6";
 

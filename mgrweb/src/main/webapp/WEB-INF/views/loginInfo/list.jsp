@@ -63,19 +63,18 @@
         <div class="table-responsive">
             <table class="table table-bordered table-hover text-center">
                 <tr>
-                    <td colspan="4">
+                    <td colspan="6">
                         <form id="queryForm" action="${pageContext.request.contextPath}/getLoginInfo" method="post">
                             <%--解决输入框单击enter刷新页面的问题--%>
                             <input type="text" hidden>
                             <%-- 当前请求登陆用户信息的类型 --%>
                             <input type="hidden" name="userType" value="${requestScope.cmd}">
                             <input name="currentPage" type="hidden">
-                            <div class="col-sm-5">
+                            <div class="col-sm-4">
                                 <div class="input-group">
                                     <span class="input-group-addon">关键字</span>
                                     <input type="text" name="keyword" value="${param.keyword}"
-                                           class="form-control"
-                                           placeholder="用户名或真实名字">
+                                           class="form-control" placeholder="用户名">
                                 </div>
                             </div>
                             <c:if test="${ui}">
@@ -84,9 +83,9 @@
                                         <span class="input-group-addon">实名认证</span>
                                         <select name="state" class="form-control" title="认证查询">
                                             <option value="-1">请选择</option>
-                                            <option ${param.state == 0 ? 'selected' : ''}>未认证</option>
-                                            <option ${param.state == 1 ? 'selected' : ''}>审核中</option>
-                                            <option ${param.state == 2 ? 'selected' : ''}>已认证</option>
+                                            <option value="0" ${param.state == 0 ? 'selected' : ''}>未实名</option>
+                                            <option value="1" ${param.state == 1 ? 'selected' : ''}>审核中</option>
+                                            <option value="2" ${param.state == 2 ? 'selected' : ''}>已实名</option>
                                         </select>
                                     </div>
                                 </div>
@@ -101,6 +100,10 @@
                     <td>#</td>
                     <td>用户名</td>
                     <td>最近一次登陆时间</td>
+                    <c:if test="${ui}">
+                        <td>手机号码</td>
+                        <td>账号实名认证状态</td>
+                    </c:if>
                     <td>操作</td>
                 </tr>
                 <c:if test="${requestScope.pageResult.rows == null}">
@@ -113,20 +116,35 @@
                         <td>${tr.count}</td>
                         <td>${user.username}</td>
                         <fmt:formatDate value="${user.loginTime}" var="loginTime" scope="page"
-                                        pattern="yyyy年MM月dd日 HH时mm分ss秒"
-                                        timeZone="GMT+8"/>
+                                        pattern="yyyy年MM月dd日 HH时mm分ss秒" timeZone="GMT+8"/>
                         <td>${loginTime}</td>
                         <c:if test="${ui}">
+                            <td>${user.userInfo.phone}</td>
                             <td>
-                                <a href="#" data-toggle="tooltip" data-placement="bottom" title="查看个人信息">
-                                    <span class="glyphicon glyphicon-eye-open"></span>
-                                </a>
+                                <c:choose>
+                                    <c:when test="${user.userInfo.state == 0 || user.userInfo.state == -1}">
+                                        <span class="text-danger">未实名</span>
+                                    </c:when>
+                                    <c:when test="${user.userInfo.state == 1}">
+                                        <span class="text-info">审核中</span>
+                                    </c:when>
+                                    <c:when test="${user.userInfo.state == 2}">
+                                        <span class="text-success">已实名</span>
+                                    </c:when>
+                                </c:choose>
+                            </td>
+                            <td>
+                                <c:if test="${user.userInfo.state != 0 && user.userInfo.state != -1}">
+                                    <a href="${pageContext.request.contextPath}/showUserInfo?id=${user.id}"
+                                       title="查看个人信息">
+                                        <span class="glyphicon glyphicon-eye-open"></span>
+                                    </a>
+                                </c:if>
                             </td>
                         </c:if>
                         <c:if test="${mg}">
                             <td>
-                                <a href="javascript:resetPassword(${user.id})" data-toggle="tooltip"
-                                   data-placement="bottom" title="密码重置">
+                                <a href="javascript:resetPassword(${user.id})" title="密码重置">
                                     <span class="glyphicon glyphicon-cog"></span>
                                 </a>
                             </td>

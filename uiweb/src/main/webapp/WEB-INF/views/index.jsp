@@ -208,11 +208,11 @@
                                 </div>
                                 <div class="text-center">
                                     <c:if test="${item.discountPrice != null}">
-                                        <span style="font-size: 16px;color: red;">￥${item.discountPrice}</span>
-                                        <s style="font-size: 16px;color: #adadad;">￥${item.salePrice}</s>
+                                        <span style="font-size: 12px;color: red;">￥${item.discountPrice}</span>
+                                        <s style="font-size: 12px;color: #adadad;">￥${item.salePrice}</s>
                                     </c:if>
                                     <c:if test="${item.discountPrice == null}">
-                                        <span style="font-size: 16px;color: red;">￥${item.salePrice}</span>
+                                        <span style="font-size: 12px;color: red;">￥${item.salePrice}</span>
                                     </c:if>
                                     <span style="font-size: 12px;color: #adadad;">|
                                     已售：<span class="text-info">${item.saleCount}</span>

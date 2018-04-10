@@ -23,4 +23,6 @@ public class LoginInfo extends BaseDomain {
     private String password;
     private int userType = USER_CLIENT;
     private Date loginTime;//最近一次登陆时间
+
+    private UserInfo userInfo;
 }

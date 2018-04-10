@@ -164,14 +164,14 @@
                                         ${item.name}
                                 </div>
                                 <div class="text-center">
-                                    <span style="padding: 0 20px;background-color: rgb(0,0,0,.01);border: solid 1px rgb(0,0,0,.03);">
+                                    <span style="color: red;padding: 0 20px;background-color: rgb(0,0,0,.01);border: solid 1px rgb(0,0,0,.03);">
                                 <c:if test="${item.discountPrice != null}">
-                                    <span style="color: red;">￥${item.discountPrice}</span>
+                                    ￥${item.discountPrice}
                                 </c:if>
                                 <c:if test="${item.discountPrice == null}">
-                                    <span style="color: red;">￥${item.salePrice}</span>
+                                    ￥${item.salePrice}
                                 </c:if>
-                            </span>
+                                    </span>
                                 </div>
                             </div>
                         </a>

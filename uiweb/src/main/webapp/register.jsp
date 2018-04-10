@@ -13,7 +13,7 @@
     <script src="${pageContext.request.contextPath}/js/plugin/layer/layer.js"></script>
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/js/views/register.js">
+    <script src="${pageContext.request.contextPath}/js/views/register.js"></script>
     <style>
         .box {
             width: 500px;
@@ -34,7 +34,7 @@
     </a>
     <HR width="80%" SIZE=5>
     <div class="center-block" style="width: 60%;">
-        <form id="registerForm" action="">
+        <form id="registerForm">
             <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-addon">

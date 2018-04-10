@@ -78,40 +78,20 @@ $(function () {
             repasswd: '两次密码输入不一致！'
         },
         submitHandler: function () {
-            //校验验证码
-            var phone = phoneEl.val();
-            var code = $(":input[name='code']").val();
             $.ajax({
-                type: 'get',
-                data: {phone: phone, code: code},
+                type: 'post',
+                data: registerForm.serialize(),
                 dataType: 'json',
-                url: basePath + '/doCheckCode',
+                url: basePath + '/register',
                 success: function (data) {
                     if (data.success) {
-                        //验证码校验成功，提交表单
-                        $.ajax({
-                            type: 'post',
-                            data: registerForm.serialize(),
-                            dataType: 'json',
-                            url: basePath + '/register',
-                            success: function (data) {
-                                if (data.success) {
-                                    layer.open({
-                                        title: '温馨提示',
-                                        icon: 6,
-                                        content: data.msg,
-                                        btn: '去登陆！',
-                                        yes: toLogin,
-                                        cancel: toLogin
-                                    });
-                                } else {
-                                    layer.open({
-                                        title: '温馨提示',
-                                        icon: 5,
-                                        content: data.msg
-                                    });
-                                }
-                            }
+                        layer.open({
+                            title: '温馨提示',
+                            icon: 6,
+                            content: data.msg,
+                            btn: '去登陆！',
+                            yes: toLogin,
+                            cancel: toLogin
                         });
                     } else {
                         layer.open({
@@ -138,7 +118,6 @@ $(function () {
             });
             return;
         }
-        return;
         //发送验证码
         $.ajax({
             type: 'get',

@@ -42,6 +42,7 @@ public class LoginInfoController {
         try {
             //发送验证码，返回响应json字符串
             String json = SmsUtil.sendCode(phone);
+            System.out.println(json);
             //获得回执状态码
             int statusCode = (int) new ObjectMapper().readValue(json, Map.class).get("code");
             if (statusCode == 200) {
@@ -56,9 +57,7 @@ public class LoginInfoController {
         return ajax;
     }
 
-    @RequestMapping("/doCheckCode")
-    @ResponseBody
-    public AjaxResult doCheckCode(String phone, String code) {
+    private AjaxResult doCheckCode(String phone, String code) {
         AjaxResult ajax;
         try {
             //校验验证码，返回响应json字符串
@@ -79,8 +78,13 @@ public class LoginInfoController {
 
     @RequestMapping("/register")
     @ResponseBody
-    public AjaxResult register(LoginInfo loginInfo, String phone) {
+    public AjaxResult register(LoginInfo loginInfo, String phone, String code) {
         AjaxResult ajax;
+        ajax = doCheckCode(phone, code);
+        if (!ajax.isSuccess()) {
+            //如果验证码校验失败
+            return ajax;
+        }
         try {
             loginInfo.setUserType(LoginInfo.USER_CLIENT);
             loginInfo.setPassword(MD5.encode(loginInfo.getPassword()));//密码加密
@@ -98,6 +102,34 @@ public class LoginInfoController {
         } catch (Exception e) {
             e.printStackTrace();
             ajax = new AjaxResult("注册异常！请稍后再试...");
+        }
+        return ajax;
+    }
+
+    @RequestMapping("/resetPassword")
+    @ResponseBody
+    public AjaxResult resetPassword(String phone, String code) {
+        AjaxResult ajax;
+        ajax = doCheckCode(phone, code);
+        if (!ajax.isSuccess()) {
+            //如果验证码校验失败
+            return ajax;
+        }
+        try {
+            UserInfo userInfo = userInfoService.getUserInfoByPhone(phone);
+            if (userInfo == null) {
+                ajax = new AjaxResult("密码重置失败！请稍后再试...");
+            } else {
+                int line = loginInfoService.resetPassword(userInfo.getId(), MD5.encode(phone));
+                if (line == 0) {
+                    ajax = new AjaxResult("密码重置失败！请稍后再试...");
+                } else {
+                    ajax = new AjaxResult(true, "密码重置成功！重置为手机号码！赶快去登陆修改吧...");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ajax = new AjaxResult("密码重置异常！请稍后再试...");
         }
         return ajax;
     }

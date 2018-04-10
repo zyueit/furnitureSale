@@ -19,22 +19,36 @@
 
     <sql id="conditions">
         <where>
-            userType = #{userType}
+            l.userType = #{userType}
             <if test="keyword != null">
-                AND username LIKE CONCAT("%",#{keyword},"%")
+                AND l.username LIKE CONCAT("%",#{keyword},"%")
+            </if>
+            <if test="state > 0">
+                AND u.state = #{state}
+            </if>
+            <if test="state == 0">
+                AND (u.state = 0 OR u.state = -1)
             </if>
         </where>
     </sql>
 
     <select id="listLoginInfoCount" resultType="long">
-        SELECT COUNT(*) FROM loginInfo
+        SELECT COUNT(*) FROM loginInfo l LEFT JOIN userInfo u ON u.id = l.id
         <include refid="conditions"/>
     </select>
 
-    <select id="listLoginInfo" resultType="LoginInfo">
-        SELECT id,username,password,loginTime FROM loginInfo
+    <resultMap id="baseMap" type="LoginInfo" autoMapping="true">
+        <id column="id" property="id"/>
+        <association property="userInfo" javaType="UserInfo" columnPrefix="userInfo_" autoMapping="true">
+            <id column="id" property="id"/>
+        </association>
+    </resultMap>
+
+    <select id="listLoginInfo" resultMap="baseMap">
+        SELECT l.id,l.username,l.loginTime,u.id userInfo_id,u.phone userInfo_phone,u.state userInfo_state
+        FROM loginInfo l LEFT JOIN userInfo u ON u.id = l.id
         <include refid="conditions"/>
-        ORDER BY loginTime DESC
+        ORDER BY l.loginTime DESC
         <if test="pageSize > 0">
             LIMIT #{startIndex},#{pageSize}
         </if>

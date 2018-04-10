@@ -54,6 +54,7 @@
 </script>
 <div style="position: fixed;top: 500px;right: 30px;">
     <div id="server" data-title="客服：185-0704-0205"></div>
-    <div id="cat" hidden data-title="查看购物车" onclick="window.open('user/shopCat')"></div>
+    <div id="cat" hidden data-title="查看购物车"
+         onclick="window.open('${pageContext.request.contextPath}/user/shopCat')"></div>
     <div id="toTop" hidden data-title="回到顶部"></div>
 </div>

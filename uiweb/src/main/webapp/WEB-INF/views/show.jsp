@@ -62,10 +62,6 @@
     }
 
     function addToShopCat() {
-        if (${sessionScope[UserContext.USER_IN_SESSION] == null}) {
-            window.open('login.jsp');
-            return;
-        }
         $.ajax({
             type: 'post',
             data: $("#shoppingForm").serialize(),
@@ -73,6 +69,9 @@
             url: '${pageContext.request.contextPath}/user/addToShopCat',
             success: function (data) {
                 layer.msg(data.msg, {time: 1000});
+            },
+            error: function () {
+                window.open("${pageContext.request.contextPath}/login.jsp");
             }
         });
     }
@@ -103,14 +102,14 @@
                     <small style="font-size: 10px;color: rgb(0,0,0,.3);">编号：${goods.sn}</small>
                 </b>
                 <p style="padding: 10px 0;">
-                    <c:if test="${goods.activity != null}">
+                    <c:if test="${goods.activity != null && goods.activity.state == 1}">
                         <a href="javascript:seeActivity(${goods.activity.id})" style="color: red;">
                             【${goods.activity.discount}折活动】&ensp;${goods.activity.title}&gt;&gt;&gt;
                         </a>
                     </c:if>
                 </p>
                 <div style="background-color: rgb(0,0,0,.05);padding: 10px;font-size: 12px;color: #adadad;">
-                    <c:if test="${goods.activity == null}">
+                    <c:if test="${goods.activity == null || goods.activity.state != 1}">
                         <c:choose>
                             <c:when test="${goods.discountPrice == null}">
                                 本站价：<span style="font-size: 16px;color: red;">￥${goods.salePrice}</span>
@@ -122,8 +121,8 @@
                             </c:when>
                         </c:choose>
                     </c:if>
-                    <c:if test="${goods.activity != null}">
-                        <fmt:formatNumber value="${goods.salePrice*goods.activity.discount}" var="disPrice"
+                    <c:if test="${goods.activity != null && goods.activity.state == 1}">
+                        <fmt:formatNumber value="${goods.salePrice*goods.activity.discount/10}" var="disPrice"
                                           type="currency" scope="page"/>
                         活动价：<span style="font-size: 16px;color: red;">${pageScope.disPrice}</span>
                         &ensp;&ensp;&ensp;

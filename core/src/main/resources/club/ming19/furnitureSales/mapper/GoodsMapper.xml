@@ -159,7 +159,7 @@
 
     <!-- 家具详细信息 -->
     <select id="getAllById" resultMap="baseMap">
-        SELECT g.*,ga.activity_id,ga.title activity_title,ga.discount activity_discount
+        SELECT g.*,ga.activity_id,ga.title activity_title,ga.discount activity_discount,ga.state activity_state
         FROM (SELECT * FROM goods WHERE id = #{id}) g LEFT JOIN
         (SELECT * FROM activity a JOIN activity_goods ag ON a.id = ag.activity_id WHERE a.state = 1) ga
         ON ga.goods_id = g.id

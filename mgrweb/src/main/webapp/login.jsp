@@ -41,7 +41,7 @@
 <%-- 解决单独的js文件获取上下文路径问题 --%>
 <input type="hidden" id="basePath" value="${pageContext.request.contextPath}">
 
-<div class="vertical-center" style="width: 470px;text-align: center;border: solid 1px rgb(0,0,0,.1);">
+<div class="vertical-center" style="width: 470px;text-align: center;">
     <img src="${pageContext.request.contextPath}/img/logo_sm.png" alt="logo">
     <span style="font-size: 20px;color: rgb(0,0,0,.5)">家具销售后台管理系统登录</span>
     <HR width="100%" style="border-color: rgb(0,0,0,.1)" SIZE=5>

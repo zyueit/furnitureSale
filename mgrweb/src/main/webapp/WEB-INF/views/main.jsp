@@ -74,7 +74,7 @@
                 <li class="list-group-item" data-page="/getLoginInfo?userType=<%= LoginInfo.USER_MANAGER %>">
                     后台用户管理<span class="badge">&raquo;</span>
                 </li>
-                <li class="list-group-item" data-page="/ui_loginInfo">
+                <li class="list-group-item" data-page="/listRealNameCheck">
                     前台实名认证<span class="badge">&raquo;</span>
                 </li>
                 <li class="list-group-item" data-page="/listSystemDictionary">

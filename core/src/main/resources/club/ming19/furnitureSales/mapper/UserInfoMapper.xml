@@ -5,10 +5,58 @@
 
 <mapper namespace="club.ming19.furnitureSales.mapper.UserInfoMapper">
     <select id="checkUserExist" resultType="long">
-        SELECT COUNT(*) FROM logininfo l JOIN userinfo u ON u.id = l.id WHERE l.username = #{phone} OR u.phone = #{phone}
+        SELECT COUNT(*) FROM logininfo l JOIN userinfo u ON u.id = l.id WHERE l.username = #{phone} OR u.phone =
+        #{phone}
+    </select>
+
+    <select id="listRealNameCheck" resultType="UserInfo">
+        SELECT id,name,IDcard,time FROM userinfo WHERE state = 1 ORDER BY time
+    </select>
+
+    <select id="getUserInfo" resultType="UserInfo">
+        SELECT * FROM userinfo WHERE id  = #{id}
     </select>
 
     <insert id="saveUserInfo" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         INSERT INTO userinfo (id,phone,state) VALUES (#{id},#{phone},#{state})
     </insert>
+
+    <update id="updateUserInfo">
+        UPDATE userinfo SET name = #{name},sex = #{sex},IDcard = #{IDcard},address = #{address},imgs = #{imgs},state =
+        #{state},time = #{time}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStateOfUserInfo">
+        UPDATE userinfo SET state = #{state} WHERE id = #{id}
+    </update>
+
+    <select id="queryShippingByUserId" resultType="Shipping">
+        SELECT * FROM shipping WHERE userInfo_id = #{id}
+    </select>
+
+    <delete id="removeShipping">
+        DELETE FROM shipping WHERE id = #{id} AND userInfo_id = #{userInfo_id}
+    </delete>
+
+    <update id="resetShipping">
+        UPDATE shipping SET state = false WHERE userInfo_id = #{userInfo_id}
+    </update>
+
+    <update id="setDefaultShipping">
+        UPDATE shipping SET state = true WHERE id = #{id} AND userInfo_id = #{userInfo_id}
+    </update>
+
+    <insert id="saveShipping" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO shipping (name,phone,address,state,userInfo_id)
+        VALUES (#{shipping.name},#{shipping.phone},#{shipping.address},#{shipping.state},#{id})
+    </insert>
+
+    <update id="resetPassword">
+        UPDATE logininfo SET password = #{newpassword} WHERE id = #{id} AND password = #{oldpassword}
+    </update>
+
+    <select id="getUserInfoByPhone" resultType="UserInfo">
+       SELECT * FROM userinfo WHERE phone = #{phone}
+    </select>
 </mapper>

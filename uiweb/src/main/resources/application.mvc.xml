@@ -36,11 +36,11 @@
             <bean class="club.ming19.furnitureSales.web.interceptor.LoginInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
-    <!-- 文件上传解析器 -->
-    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">-->
-    <!--<property name="defaultEncoding" value="UTF-8"/>-->
-    <!--<property name="maxUploadSizePerFile" value="#{5*1024*1024}"/>-->
-    <!--</bean>-->
+    <!--文件上传解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="maxUploadSizePerFile" value="#{5*1024*1024}"/>
+    </bean>
 
     <!--&lt;!&ndash; 异步监听器配置 &ndash;&gt;-->
     <!--<task:executor id="asyncExecutor" pool-size="50" keep-alive="1000" queue-capacity="100"/>-->

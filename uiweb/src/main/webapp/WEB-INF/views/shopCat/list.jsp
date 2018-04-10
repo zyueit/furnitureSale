@@ -59,30 +59,30 @@
     }
 
     function reCountPrice(that, num, salePrice, item_id) {
-        if (${sessionScope[UserContext.USER_IN_SESSION] == null}) {
-            window.open('login.jsp');
-            return;
-        }
         $(that).closest('td').find('.countPrice').html('￥' + (num * salePrice).toFixed(2));
         reTotalCount();
         $.ajax({
             type: 'get',
             data: {id: item_id, num: num},
-            url: '${pageContext.request.contextPath}/user/updateNumOfItem'
+            dataType: 'json',
+            url: '${pageContext.request.contextPath}/user/updateNumOfItem',
+            error: function () {
+                window.open("${pageContext.request.contextPath}/login.jsp");
+            }
         });
     }
 
     function deleteItem(that, num, item_id) {
-        if (${sessionScope[UserContext.USER_IN_SESSION] == null}) {
-            window.open('login.jsp');
-            return;
-        }
         $(that).closest('tr').remove();
         reTotalCount();
         $.ajax({
             type: 'get',
             data: {id: item_id, num: num},
-            url: '${pageContext.request.contextPath}/user/updateNumOfItem'
+            dataType: 'json',
+            url: '${pageContext.request.contextPath}/user/updateNumOfItem',
+            error: function () {
+                window.open("${pageContext.request.contextPath}/login.jsp");
+            }
         });
     }
 
@@ -95,13 +95,19 @@
         });
         $("#totalCount").html('￥' + totalCount.toFixed(2));
     }
+
+    function toPayOfOrder() {
+        $.each($(".prebox:checked"), function (index, item) {
+            console.log($(item).data('item'));
+        });
+    }
 </script>
 
 <body>
 <div style="padding: 10px 0;background-color: rgb(0,0,0,.1);">
     <div class="container" style="padding: 0 8%;font-size: 12px;">
         <a href="${pageContext.request.contextPath}/index">首页</a>&ensp;
-        <a href="${pageContext.request.contextPath}/index">个人中心</a>
+        <a href="${pageContext.request.contextPath}/user/indexOfUserInfo">个人中心</a>
         <div class="pull-right" style="font-size: 12px;">
             <span>用户&ensp;<b>[ ${sessionScope[UserContext.USER_IN_SESSION].username} ]</b>&ensp;的购物车！</span>&ensp;&ensp;
             <a href="javascript:logout()" style="color: #419641;">安全退出</a>
@@ -130,7 +136,7 @@
                     </tr>
                 </c:if>
                 <c:forEach items="${sessionScope[UserContext.SHOPCAT_IN_SESSION]}" var="item">
-                    <c:if test="${item.goods.activity == null}">
+                    <c:if test="${item.goods.activity == null || item.goods.activity.state != 1}">
                         <c:if test="${item.goods.discountPrice == null}">
                             <c:set value="${item.goods.salePrice}" var="salePrice" scope="page"/>
                         </c:if>
@@ -138,8 +144,9 @@
                             <c:set value="${item.goods.discountPrice}" var="salePrice" scope="page"/>
                         </c:if>
                     </c:if>
-                    <c:if test="${item.goods.activity != null}">
-                        <c:set value="${item.goods.salePrice*item.goods.activity.discount}" var="salePrice"
+                    ${goods.activity.state}
+                    <c:if test="${item.goods.activity != null && item.goods.activity.state == 1}">
+                        <c:set value="${item.goods.salePrice*item.goods.activity.discount/10}" var="salePrice"
                                scope="page"/>
                     </c:if>
                     <fmt:formatNumber value="${pageScope.salePrice*item.num}" var="countPrice" scope="page"
@@ -151,7 +158,7 @@
                                 <div class="xs_img" style="width: 50%;display: inline-block;margin-left: 10px;">
                                     <input type="checkbox" class="btn-xs ${item.goods.state == 0 ? '':'prebox'}"
                                            style="margin-right: 5px;" ${item.goods.state == 0 ? 'disabled':''}
-                                           onchange="reTotalCount()">
+                                           onchange="reTotalCount()" data-item="${item.id}">
                                     <img src="${item.goods.imgs.split(',')[0]}" width="80" height="80">
                                     <div style="width: 200px;display: inline-block;">
                                         <a href="${pageContext.request.contextPath}/getAllById?id=${item.goods.id}"
@@ -189,7 +196,7 @@
     <div style="border: solid 1px rgb(0,0,0,.1);padding: 5px 10px;margin: 10px 0;background-color: rgb(0,0,0,.03);">
         <input type="checkbox" class="btn-xs chooseAll"> <label for="all">全选</label>
         <p class="pull-right">总计：<b id="totalCount" style="color: red;font-size: 14px;">￥0.00</b>&ensp;&ensp;
-            <a href="#" class="btn btn-danger btn-xs">去结算</a>
+            <button type="button" class="btn btn-danger btn-xs" onclick="toPayOfOrder()">去结算</button>
         </p>
     </div>
 </div>

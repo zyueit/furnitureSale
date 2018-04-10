@@ -118,11 +118,12 @@
             </div>
             <div class="col-md-offset-1 col-md-3">
                 <div class="pull-right">
-                    <a href="javascript:(window.open('user/shopCat'))()"
+                    <a href="${pageContext.request.contextPath}/user/shopCat" target="_blank"
                        style="display: inline-block;padding: 10px;color: #B8B8B8;">&ensp;
                         <span class="glyphicon glyphicon-shopping-cart"></span><br>购物车
                     </a>
-                    <a href="" style="display: inline-block;padding: 10px;color: #B8B8B8;">&ensp;&ensp;
+                    <a href="${pageContext.request.contextPath}/user/indexOfUserInfo" target="_blank"
+                       style="display: inline-block;padding: 10px;color: #B8B8B8;">&ensp;&ensp;
                         <span class="glyphicon glyphicon-user"></span><br>个人中心
                     </a>
                 </div>
