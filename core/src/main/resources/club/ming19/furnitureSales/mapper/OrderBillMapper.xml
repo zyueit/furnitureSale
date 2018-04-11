@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="club.ming19.furnitureSales.mapper.OrderBillMapper">
+    <insert id="saveOrderBill" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO orderbill (sn,totalAmount,state,createTime,remark,user_id,shipping_id)
+        VALUES (#{sn},#{totalAmount},#{state},#{createTime},#{remark},#{loginInfo.id},#{shipping.id})
+    </insert>
+
+    <insert id="saveOrderBillItem" useGeneratedKeys="true" keyColumn="id" keyProperty="item.id">
+        INSERT INTO orderbillitem (num,salePrice,amount,goods_id,bill_id)
+        VALUES (#{item.num},#{item.salePrice},#{item.amount},#{item.goods.id},#{bill_id})
+    </insert>
+
+    <update id="updateStateToCancelBill">
+        UPDATE orderbill SET state = #{state} WHERE id = #{id} AND state = 0
+    </update>
+
+    <select id="getCountOfState" resultType="long">
+        SELECT COUNT(*) FROM orderbill WHERE user_id = #{id} AND state = #{state}
+    </select>
+
+    <sql id="condition">
+        <where>
+            user_id = #{id}
+            <if test="state != null and state &lt; 4 and state &gt;= 0">
+                AND o.state = #{state}
+            </if>
+        </where>
+    </sql>
+
+    <select id="queryBillsCountByStateAndUid" resultType="long">
+        SELECT COUNT(*) FROM orderbill o
+        <include refid="condition"/>
+    </select>
+
+    <resultMap id="baseMap" type="OrderBill" autoMapping="true">
+        <id column="id" property="id"/>
+        <collection property="items" ofType="OrderBillItem" columnPrefix="item_" autoMapping="true">
+            <id column="id" property="id"/>
+            <association property="goods" javaType="Goods" columnPrefix="goods_" autoMapping="true">
+                <id column="id" property="id"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <select id="queryBillsByStateAndUid" resultMap="baseMap">
+        SELECT o.*,i.id item_id,i.num item_num,i.salePrice item_salePrice,i.amount item_amount,
+        i.goods_id item_goods_id,g.name item_goods_name,g.imgs item_goods_imgs
+        FROM orderbill o JOIN orderbillitem i ON i.bill_id = o.id JOIN goods g ON g.id = i.goods_id
+        <include refid="condition"/>
+        ORDER BY o.createTime DESC
+        LIMIT #{startIndex},#{pageSize}
+    </select>
+</mapper>

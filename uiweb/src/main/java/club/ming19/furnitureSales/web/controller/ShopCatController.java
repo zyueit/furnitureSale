@@ -20,8 +20,6 @@ import java.util.List;
 @RequestMapping("/user")
 public class ShopCatController {
     @Autowired
-    private IShopCatService shopCatService;
-    @Autowired
     private IGoodsService goodsService;
 
     @RequestMapping("/shopCat")
@@ -31,7 +29,7 @@ public class ShopCatController {
         for (ShopCatItem item : items) {
             item.setGoods(goodsService.getAllById(item.getGoods().getId()));
         }
-        return "shopCat/list";
+        return "shopcat/list";
     }
 
     @RequestMapping("/addToShopCat")
@@ -52,7 +50,6 @@ public class ShopCatController {
         goods.setId(id);
         item.setGoods(goods);
         items.add(item);
-        //session.setAttribute(UserContext.SHOPCAT_IN_SESSION, items);
         return new AjaxResult(true, "添加成功！");
     }
 
@@ -63,7 +60,7 @@ public class ShopCatController {
         if (num.compareTo(BigDecimal.ZERO) == 0) {
             for (Iterator<ShopCatItem> iterator = items.iterator(); iterator.hasNext(); ) {
                 ShopCatItem item = iterator.next();
-                if (item.getId().equals(id)) {
+                if (item.getGoods().getId().equals(id)) {
                     iterator.remove();
                     break;
                 }
@@ -71,7 +68,7 @@ public class ShopCatController {
         } else {
             for (ShopCatItem item : items) {
                 //如果购物车里有该明细，只加新增的数量
-                if (id.equals(item.getId())) {
+                if (id.equals(item.getGoods().getId())) {
                     item.setNum(num);
                     break;
                 }

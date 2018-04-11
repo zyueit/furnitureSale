@@ -97,9 +97,20 @@
     }
 
     function toPayOfOrder() {
-        $.each($(".prebox:checked"), function (index, item) {
-            console.log($(item).data('item'));
+        var ids = '?';
+        var prebox = $(".prebox:checked");
+        if (prebox.length === 0) {
+            layer.open({
+                title: '温馨提示',
+                icon: 6,
+                content: '请先选择要购买的商品哦！'
+            });
+            return;
+        }
+        $.each(prebox, function (index, item) {
+            ids = ids + 'ids=' + $(item).data('goods') + '&';
         });
+        location.href = '${pageContext.request.contextPath}/user/toOrderBill' + ids;
     }
 </script>
 
@@ -117,7 +128,7 @@
 <div class="container" style="padding: 10px 8%;font-size: 12px;">
     <div style="border: solid 1px rgb(0,0,0,.1);padding: 5px;min-height: 500px;">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-hover">
                 <tr align="center">
                     <td width="50%">
                         <div class="pull-left">
@@ -158,7 +169,7 @@
                                 <div class="xs_img" style="width: 50%;display: inline-block;margin-left: 10px;">
                                     <input type="checkbox" class="btn-xs ${item.goods.state == 0 ? '':'prebox'}"
                                            style="margin-right: 5px;" ${item.goods.state == 0 ? 'disabled':''}
-                                           onchange="reTotalCount()" data-item="${item.id}">
+                                           onchange="reTotalCount()" data-goods="${item.goods.id}">
                                     <img src="${item.goods.imgs.split(',')[0]}" width="80" height="80">
                                     <div style="width: 200px;display: inline-block;">
                                         <a href="${pageContext.request.contextPath}/getAllById?id=${item.goods.id}"
@@ -176,13 +187,13 @@
                                 <div style="width: 15%;display: inline-block;text-align: center;">
                                     <input type="number" value="${item.num}" ${item.goods.state == 0 ? 'disabled':''}
                                            style="width: 50px;text-align: center;" min="1"
-                                           onchange="reCountPrice(this,this.value,${pageScope.salePrice},${item.id})">
+                                           onchange="reCountPrice(this,this.value,${pageScope.salePrice},${item.goods.id})">
                                 </div>
                                 <div style="width: 10%;display: inline-block;text-align: center;">
                                     <b class="countPrice" style="color: red;">${pageScope.countPrice}</b>
                                 </div>
                                 <div style="width: 10%;display: inline-block;text-align: center;">
-                                    <a href="javascript:" onclick="deleteItem(this,0,${item.id})">
+                                    <a href="javascript:" onclick="deleteItem(this,0,${item.goods.id})">
                                         <span class="glyphicon glyphicon-remove text-danger"></span> 删除
                                     </a>
                                 </div>

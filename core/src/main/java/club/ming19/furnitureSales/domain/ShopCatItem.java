@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.ibatis.type.Alias;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 @Setter
 @Getter
 @Alias("ShopCatItem")
-public class ShopCatItem extends BaseDomain {
+public class ShopCatItem extends BaseDomain implements Serializable {
     private Goods goods;//哪一个商品
     private BigDecimal num;//数量
 }

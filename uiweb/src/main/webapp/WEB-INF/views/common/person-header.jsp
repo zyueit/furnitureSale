@@ -66,7 +66,7 @@
                 </div>
             </li>
             <li style="margin-right: 50px;">
-                <a href="javascript:">已购买的商品</a>
+                <a href="${pageContext.request.contextPath}/user/toHistoryOfBill">已购买的商品</a>
                 <div class="mycaret" style="position: absolute;top: 74px;" hidden>
                     <span class="glyphicon glyphicon-triangle-top"></span>
                 </div>

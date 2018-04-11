@@ -1,13 +1,13 @@
 package club.ming19.furnitureSales.web.controller;
 
-import club.ming19.furnitureSales.domain.Goods;
-import club.ming19.furnitureSales.domain.LoginInfo;
-import club.ming19.furnitureSales.domain.Shipping;
-import club.ming19.furnitureSales.domain.UserInfo;
+import club.ming19.furnitureSales.domain.*;
 import club.ming19.furnitureSales.page.AjaxResult;
 import club.ming19.furnitureSales.page.FileUploadResult;
+import club.ming19.furnitureSales.page.PageResult;
+import club.ming19.furnitureSales.query.OrderBillQueryObject;
 import club.ming19.furnitureSales.service.IGoodsService;
 import club.ming19.furnitureSales.service.ILoginInfoService;
+import club.ming19.furnitureSales.service.IOrderBillService;
 import club.ming19.furnitureSales.service.IUserInfoService;
 import club.ming19.furnitureSales.util.MD5;
 import club.ming19.furnitureSales.util.UserContext;
@@ -31,6 +31,8 @@ public class UserInfoController {
     @Autowired
     private IUserInfoService userInfoService;
     @Autowired
+    private IOrderBillService orderBillService;
+    @Autowired
     private IGoodsService goodsService;
 
     @RequestMapping("/indexOfUserInfo")
@@ -39,9 +41,29 @@ public class UserInfoController {
 
         getUserInfo(request);
 
+        HttpSession session = request.getSession();
+        LoginInfo user = (LoginInfo) session.getAttribute(UserContext.USER_IN_SESSION);
+
+        queryInfoOfBill(request, user);
+
         List<Goods> recommend = goodsService.listGoodsBySaleCount();
         request.setAttribute("recommend", recommend);
         return "userInfo/index";
+    }
+
+    private void queryInfoOfBill(HttpServletRequest request, LoginInfo user) {
+        //查询待付款订单数量
+        Long wait_to_pay = orderBillService.getCountOfState(user.getId(), OrderBill.WAIT_TO_PAY);
+        request.setAttribute("wait_to_pay", wait_to_pay);
+        //查询待发货订单数量
+        Long wait_to_send = orderBillService.getCountOfState(user.getId(), OrderBill.WAIT_TO_SEND);
+        request.setAttribute("wait_to_send", wait_to_send);
+        //查询待收货订单数量
+        Long wait_to_take = orderBillService.getCountOfState(user.getId(), OrderBill.WAIT_TO_TAKE);
+        request.setAttribute("wait_to_take", wait_to_take);
+        //查询待评价订单数量
+        Long wait_to_eval = orderBillService.getCountOfState(user.getId(), OrderBill.WAIT_TO_EVAL);
+        request.setAttribute("wait_to_eval", wait_to_eval);
     }
 
     private void getUserInfo(HttpServletRequest request) {
@@ -62,9 +84,26 @@ public class UserInfoController {
         return "userInfo/personalInfo";
     }
 
+    @RequestMapping("toHistoryOfBill")
+    public String toHistoryOfBill(HttpServletRequest request, OrderBillQueryObject qo) {
+        request.setAttribute("cmd", 2);
+
+        HttpSession session = request.getSession();
+        LoginInfo user = (LoginInfo) session.getAttribute(UserContext.USER_IN_SESSION);
+
+        queryInfoOfBill(request, user);
+
+        qo.setId(user.getId());
+        PageResult<OrderBill> pageResult = orderBillService.queryBillsByStateAndUid(qo);
+        request.setAttribute("pageResult", pageResult);
+        return "userInfo/historyOfBill";
+    }
+
     @RequestMapping("/addressOfShipping")
     public String toAddress(HttpServletRequest request) {
         request.setAttribute("cmd", 3);
+
+        getUserInfo(request);
 
         HttpSession session = request.getSession();
         UserInfo userInfo = (UserInfo) session.getAttribute(UserContext.USERINFO_IN_SESSION);

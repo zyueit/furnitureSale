@@ -208,9 +208,11 @@
             <c:if test="${pageScope.count < 5}">
                 <div class="col-sm-offset-3 old">
                     <input type="button" class="btn btn-default" value="添加新地址" onclick="showNew()">
-                    <p style="color: rgb(0,0,0,.3);margin-top: 5px;">最多添加5条收货地址</p>
                 </div>
             </c:if>
+            <div class="col-sm-offset-3">
+                <p style="color: rgb(0,0,0,.3);margin-top: 5px;">最多添加5条收货地址</p>
+            </div>
             <div class="col-sm-12 new" hidden>
                 <fieldset>
                     <legend style="font-size: 12px;padding-left: 10px;">添加新地址</legend>

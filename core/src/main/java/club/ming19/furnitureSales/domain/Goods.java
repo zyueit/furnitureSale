@@ -43,7 +43,5 @@ public class Goods extends BaseDomain {
     private int state = OUT;//商品状态--上架--下架
     private int saleCount;//销量
 
-
     private Activity activity;//正在参加的活动--只能参加一个正在进行的活动
-    private List<Evaluation> evals;//用户评价
 }

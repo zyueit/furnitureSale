@@ -32,29 +32,37 @@
     <div style="border: solid 1px rgb(0,0,0,.1);width: 100%;padding: 5px 10px;">
         <ul class="list-inline pull-right" style="margin-top: 11px;font-size: 12px;">
             <li style="padding: 5px 40px;border-left: dashed 1px #f8efc0;">
-                <a href="javascript:">待付款 <span class="label label-info">0</span></a>
+                <a href="${pageContext.request.contextPath}/user/toHistoryOfBill?state=0">待付款
+                    <span class="label label-info">${requestScope.wait_to_pay}</span>
+                </a>
             </li>
             <li style="padding: 5px 40px;border-left: dashed 1px #f8efc0;">
-                <a href="javascript:">待发货 <span class="label label-info">0</span></a>
+                <a href="${pageContext.request.contextPath}/user/toHistoryOfBill?state=1">待发货
+                    <span class="label label-info">${requestScope.wait_to_send}</span>
+                </a>
             </li>
             <li style="padding: 5px 40px;border-left: dashed 1px #f8efc0;">
-                <a href="javascript:">待收货 <span class="label label-info">0</span></a>
+                <a href="${pageContext.request.contextPath}/user/toHistoryOfBill?state=2">待收货
+                    <span class="label label-info">${requestScope.wait_to_take}</span>
+                </a>
             </li>
             <li style="padding: 5px 40px;border-left: dashed 1px #f8efc0;">
-                <a href="javascript:">待评价 <span class="label label-info">0</span></a>
+                <a href="${pageContext.request.contextPath}/user/toHistoryOfBill?state=3">待评价
+                    <span class="label label-info">${requestScope.wait_to_eval}</span>
+                </a>
             </li>
         </ul>
-        <a href="">
+        <a href="${pageContext.request.contextPath}/user/personalUserInfo">
             <div id="headimg" style="background: url('${pageContext.request.contextPath}/img/timg.jpg') -5px -24px;
                     width: 50px;height: 50px;border-radius: 25px;opacity: .6;float: left;text-align: center;">
                 <p style="width: 50px;height: 50px;border-radius: 25px;font-size: 10px;color: #FFFFFF;
                 background-color: #0f0f0f;opacity: .8;padding-top: 20px;" hidden>
-                    编辑资料
+                    个人资料
                 </p>
             </div>
         </a>
         <div style="height: 50px;width: 200px;margin-left: 60px;padding-top: 15px;">
-            <a href="">
+            <a href="${pageContext.request.contextPath}/user/personalUserInfo">
                 ${sessionScope[UserContext.USER_IN_SESSION].username}
             </a>
             <span class="label label-info">

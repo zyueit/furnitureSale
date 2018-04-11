@@ -86,7 +86,7 @@
 
 <%@ include file="/WEB-INF/views/common/person-header.jsp" %>
 <div class="container" style="padding: 0 8%;">
-    <div class="row" style="margin: 20px 0;">
+    <div class="row" style="margin: 20px 0;min-height: 370px;">
         <div class="col-sm-offset-2 col-sm-8" style="padding: 10px 15px;">
             <div class="col-sm-12">
                 <fieldset>
@@ -131,8 +131,6 @@
         </div>
     </div>
 </div>
-<div style="width: 100%;position: absolute;bottom: 0;left: 0;">
-    <%@ include file="/WEB-INF/views/common/footer.jsp" %>
-</div>
+<%@ include file="/WEB-INF/views/common/footer.jsp" %>
 </body>
 </html>
